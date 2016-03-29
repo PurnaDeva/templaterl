@@ -21,7 +21,7 @@ init_cowboy() ->
         cowboy_router:compile([{
             '_', % Host
             [
-            {"/templatel", templaterl, []}
+            {"/templaterl", templaterl, []}
             ] % Paths
         }]),
     Port = 9999,

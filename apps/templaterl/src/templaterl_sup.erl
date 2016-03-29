@@ -15,14 +15,12 @@
 %% API functions
 %% ===================================================================
 
-start_link([Templaterl]) ->
-    supervisor:start_link({local, ?MODULE}, ?MODULE, [Templaterl]).
+start_link(_) ->
+    supervisor:start_link({local, ?MODULE}, ?MODULE, []).
 
 %% ===================================================================
 %% Supervisor callbacks
 %% ===================================================================
 
-init([Templaterl]) ->
-    {ok, {{one_for_one, 5, 10}, [
-        ?CHILD(executor, Templaterl)
-    ]}}.
+init(_) ->
+    {ok, {{one_for_one, 5, 10}, []}}.
