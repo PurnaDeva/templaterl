@@ -3,7 +3,8 @@
 -export([
 	init/3,
 	handle/2,
-	terminate/3
+	terminate/3,
+	dict_from_file/1
 	]).
 
 init(_Transport, Req, []) ->
@@ -27,3 +28,31 @@ response(<<"GET">>, Body, Req) ->
 response(_, _, Req) ->
 	%% Method not allowed.
 	cowboy_req:reply(405, Req).
+
+trim_whitespace(Input) ->
+   re:replace(Input, "(^\\s+)|(\\s+$)", "", [global,{return,list}]).
+
+dict_from_file(Filename) ->
+	case file:open(Filename, [read]) of
+		{ok, FP} ->
+			dict_from_file_(FP, dict:new());
+		{error,_} ->
+			'invalid_filename'
+	end.
+
+dict_from_file_(FP, Dict) ->
+	case file:read_line(FP) of
+		{ok, LN} ->
+			case string:tokens(LN, ",") of
+				[K,V|_] ->
+					KK = trim_whitespace(K),
+					VV = trim_whitespace(V),
+					Dict2 = dict:store(KK, VV, Dict);
+				_ ->
+					Dict2 = Dict
+			end,
+			dict_from_file_(FP, Dict2);
+		_ ->
+			file:close(FP),
+			Dict
+	end.
